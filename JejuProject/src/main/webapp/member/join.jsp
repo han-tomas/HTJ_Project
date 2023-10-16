@@ -59,7 +59,7 @@
 				        <tr>
 				         <th class="text-right" width=10%>생년월일</th>
 				         <td width=90% class="inline">
-				          <input type="date" name=birthday size=20  ref="birthday" v-model="birthday">
+				          <input type="date" name=birth size=20  ref="birth" v-model="birth">
 				         </td>
 				        </tr>
 				        
@@ -129,6 +129,106 @@
                 </div>
             </div>
         </div>
-</div>                
+</div> 
+<script>
+	new Vue({
+		el:'.container',
+		data:{
+			id:'',
+			pwd:'',
+			pwd1:'',
+  			name:'',
+  			sex:'',
+  			birth:'',
+  			email:'',
+  			post:'',
+  			addr1:'',
+  			addr2:'',
+  			phone1:'010',
+  			phone:'',
+  			content:'',
+  			idOk:'',
+  			pwdOk:'',
+  			emailOk:'',
+  			phoneOk:'',
+  			isDisabled:false
+		},
+		methods:{
+			submintForm:function(event){
+				if(this.id && this.name && this.pwd && this.pwd1
+						&& this.sex && this.email && this.birth 
+						&& this.post && this.addr1 && this.phone && this.phone1 
+						&& !this.idOk && !this.emailOk){
+					return true;
+				}	
+				
+				if(this.id=='' || this.idOk!='')
+				{
+					this.$refs.id.focus();
+				}
+				else if(this.pwd=='')
+				{
+					this.$refs.pwd.focus();
+				}
+				else if(this.pwd1=='')
+				{
+					this.$refs.pwd1.focus();
+				}
+				else if(this.pwd != this.pwd1)
+				{
+					this.pwd='';
+					this.pwd1='';
+				}
+				else if(this.name=='')
+				{
+					this.$refs.name.focus();
+				}
+				else if(this.email=='' || this.emailOk!='')
+				{
+					this.$refs.email.focus();
+				}
+				else if(this.post==''){
+					alert('우편번호를 입력하세요')
+				}
+				else if(this.phone==''){
+					this.$refs.phone.focus()
+				}
+				event.preventDefault()
+			},
+			postFind:function(){
+				let_this=this
+				new daum.Postcode({
+					oncomplete:function(data){
+	  					_this.post=data.zonecode;
+	  					_this.addr1=data.address;  						
+  					}
+				}).open()
+			},
+			idCheck:function(){
+  				if(this.id!=='')
+  				{
+  					axios.get("http://localhost/web/member/idcheck_ok_vue.do",{
+  						params:{
+  							id:this.id
+  						}
+  					}).then(res=>{
+  						if(res.data=='no')
+  						{
+  							this.idOk('이미 존재하는 아이디입니다.')
+  						}
+  						else
+  						{
+  							this.idCheckValidate(res.data)
+  						}
+  					})
+  				}
+  				else
+  				{
+  					this.idOk=''
+  				}
+  			},
+		}
+	})
+</script>               
 </body>
 </html>
